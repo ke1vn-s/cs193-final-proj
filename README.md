@@ -26,16 +26,17 @@ Most meals are eaten at the Purdue dining hall, and as someone who works out and
 
 1. Install Java
 2. Clone Repo:
-'''bash
+```bash
    git clone https://github.com/ke1vn-s/cs193-final-proj
    cd cs193-final-proj
+```
 3. Download GSON '.jar' file and put in 'lib/' folder.
 
 *coming back after code writeen*
 
 ## Usage
 
-'''text
+```text
 Dining Court: Wiley
 1. Cheese Pizza
 2. Lasagna
@@ -49,7 +50,7 @@ Calories: 300
 Protein: 10g
 Carbs: 3g
 Fat: 15g
-'''
+```
 
 ## Roadmap
 
