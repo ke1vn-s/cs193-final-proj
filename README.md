@@ -55,7 +55,7 @@ Carbs: 3g
 Fat: 15g
 ```
 
-## Roadmap
+## Future Plans
 
 - [ ] Save each day into a log
 - [ ] Choose any dining hall
