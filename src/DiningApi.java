@@ -18,4 +18,14 @@ public class DiningApi {
         return new Gson().fromJson(response.body(), Menu.class);
     }
 
+    public static ItemNutrition getNutrition(String itemId) throws Exception {
+        String url = "https://api.hfs.purdue.edu/menus/v2/items/" + itemId;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder(URI.create(url)).build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        return new Gson().fromJson(response.body(), ItemNutrition.class);
+    }
+
 }
