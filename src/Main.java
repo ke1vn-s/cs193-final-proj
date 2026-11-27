@@ -36,6 +36,14 @@ public class Main {
             System.out.print("Select a number to see menu (1-" + openMeals.size() + "): ");
             
             int choice = scanner.nextInt();
+
+            while (!(openMeals.size() >= choice && choice > 0)) {
+                System.out.println("\nInvalid input. Please enter a number between 1 and " + openMeals.size() + ".");
+                System.out.println("\n---------------------------");
+                System.out.print("\nSelect a number to see menu (1-" + openMeals.size() + "): ");
+                choice = scanner.nextInt();
+                
+            }
             Meal chosenMeal = openMeals.get(choice - 1);
 
             System.out.println("\n---- " + chosenMeal.getType() + " Menu ----");
@@ -49,7 +57,15 @@ public class Main {
             
             System.out.print("Select a station number to see items (1-" + chosenMeal.getStations().size() + "): ");
             int stationChoice = scanner.nextInt();
+
+            while (!(chosenMeal.getStations().size() >= stationChoice && stationChoice > 0)) {
+                System.out.println("\nInvalid input. Please enter a number between 1 and " + chosenMeal.getStations().size() + ".");
+                System.out.println("\n---------------------------");
+                System.out.print("\nSelect a station number to see items (1-" + chosenMeal.getStations().size() + "): ");
+                stationChoice = scanner.nextInt();
+            }
             Station chosenStation = chosenMeal.getStations().get(stationChoice - 1);
+
 
             System.out.println("\n---- " + chosenStation.getName() + " Items ----");
             
@@ -63,6 +79,13 @@ public class Main {
             
             System.out.print("Select an item to log (1-" + chosenStation.getItems().size() + "): ");
             int itemChoice = scanner.nextInt();
+
+            while (!(chosenStation.getItems().size() >= itemChoice && itemChoice > 0)) {
+                System.out.println("\nInvalid input. Please enter a number between 1 and " + chosenStation.getItems().size() + ".");
+                System.out.println("\n---------------------------");
+                System.out.print("\nSelect an item to log (1-" + chosenStation.getItems().size() + "): ");
+                itemChoice = scanner.nextInt();
+            }
             Item chosenItem = chosenStation.getItems().get(itemChoice - 1);
 
             System.out.println("\n---------------------------");
@@ -78,7 +101,15 @@ public class Main {
                 System.out.println("\n---------------------------");
                 
                 System.out.print("\nSelect another item to log (1-" + chosenStation.getItems().size() + "): ");
+                
                 itemChoice = scanner.nextInt();
+                while (!(chosenStation.getItems().size() >= itemChoice && itemChoice > 0)) {
+                    System.out.println("\nInvalid input. Please enter a number between 1 and " + chosenStation.getItems().size() + ".");
+                    System.out.println("\n---------------------------");
+                    System.out.print("\nSelect an item to log (1-" + chosenStation.getItems().size() + "): ");
+                    itemChoice = scanner.nextInt();
+                }
+                
                 chosenItem = chosenStation.getItems().get(itemChoice - 1);
 
                 System.out.println("\n---------------------------");
@@ -92,12 +123,12 @@ public class Main {
 
             calories += getValue(nutrition, "Calories") * servings;
             protein += getValue(nutrition, "Protein") * servings;
-            carbs += getValue(nutrition, "Carbohydrates") * servings;
-            fat += getValue(nutrition, "Fat") * servings;
+            carbs += getValue(nutrition, "Total Carbohydrate") * servings;
+            fat += getValue(nutrition, "Total Fat") * servings;
 
             System.out.println("\n---------------------------");
             
-            System.out.println("\nLogged " + (int) servings + " serving(s) of " + chosenItem.getName() + ".");
+            System.out.println("\nLogged " + servings + " serving(s) of " + chosenItem.getName() + ".");
 
             System.out.println("\n---------------------------");
 
@@ -115,7 +146,7 @@ public class Main {
         }
 
         System.out.println("\n---- Nutrition Summary ----");
-        System.out.println("\nTotal Calories: " + String.format("%.0f", calories) + "calories");
+        System.out.println("\nTotal Calories: " + String.format("%.0f", calories) + " calories");
         System.out.println("Total Protein: " + String.format("%.0f", protein) + "g");
         System.out.println("Total Carbohydrates: " + String.format("%.0f", carbs) + "g");
         System.out.println("Total Fat: " + String.format("%.0f", fat) + "g");
