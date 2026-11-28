@@ -4,14 +4,25 @@ import java.util.Scanner;
 
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         double calories = 0;
         double protein = 0;
         double carbs = 0;
         double fat = 0;
 
-        Menu menu = DiningApi.getMenu();
+        Menu menu;
+        try {
+            menu = DiningApi.getMenu();
+        } catch (Exception e) {
+            System.out.println("Couldn't retrieve menu. Check your internet connection and try again.");
+            return;
+        }
+        if (menu == null || menu.getMeals() == null) {
+            System.out.println("No meals are currently available.");
+            return;
+        }
+
         Scanner scanner = new Scanner(System.in);
 
         String continueLogging = "y";
@@ -33,17 +44,7 @@ public class Main {
             
             System.out.println("---------------------------\n");
             
-            System.out.print("Select a number to see menu (1-" + openMeals.size() + "): ");
-            
-            int choice = scanner.nextInt();
-
-            while (!(openMeals.size() >= choice && choice > 0)) {
-                System.out.println("\nInvalid input. Please enter a number between 1 and " + openMeals.size() + ".");
-                System.out.println("\n---------------------------");
-                System.out.print("\nSelect a number to see menu (1-" + openMeals.size() + "): ");
-                choice = scanner.nextInt();
-                
-            }
+            int choice = inRangeChecker(scanner, "Select a number to see menu (1-" + openMeals.size() + "): ", 1, openMeals.size());
             Meal chosenMeal = openMeals.get(choice - 1);
 
             System.out.println("\n---- " + chosenMeal.getType() + " Menu ----");
@@ -55,15 +56,7 @@ public class Main {
 
             System.out.println("---------------------------\n");
             
-            System.out.print("Select a station number to see items (1-" + chosenMeal.getStations().size() + "): ");
-            int stationChoice = scanner.nextInt();
-
-            while (!(chosenMeal.getStations().size() >= stationChoice && stationChoice > 0)) {
-                System.out.println("\nInvalid input. Please enter a number between 1 and " + chosenMeal.getStations().size() + ".");
-                System.out.println("\n---------------------------");
-                System.out.print("\nSelect a station number to see items (1-" + chosenMeal.getStations().size() + "): ");
-                stationChoice = scanner.nextInt();
-            }
+            int stationChoice = inRangeChecker(scanner, "Select a station number to see items (1-" + chosenMeal.getStations().size() + "): ", 1, chosenMeal.getStations().size());
             Station chosenStation = chosenMeal.getStations().get(stationChoice - 1);
 
 
@@ -77,15 +70,7 @@ public class Main {
             
             System.out.println("---------------------------\n");
             
-            System.out.print("Select an item to log (1-" + chosenStation.getItems().size() + "): ");
-            int itemChoice = scanner.nextInt();
-
-            while (!(chosenStation.getItems().size() >= itemChoice && itemChoice > 0)) {
-                System.out.println("\nInvalid input. Please enter a number between 1 and " + chosenStation.getItems().size() + ".");
-                System.out.println("\n---------------------------");
-                System.out.print("\nSelect an item to log (1-" + chosenStation.getItems().size() + "): ");
-                itemChoice = scanner.nextInt();
-            }
+            int itemChoice = inRangeChecker(scanner, "Select an item to log (1-" + chosenStation.getItems().size() + "): ", 1, chosenStation.getItems().size());
             Item chosenItem = chosenStation.getItems().get(itemChoice - 1);
 
             System.out.println("\n---------------------------");
@@ -100,26 +85,22 @@ public class Main {
                     }
                 System.out.println("\n---------------------------");
                 
-                System.out.print("\nSelect another item to log (1-" + chosenStation.getItems().size() + "): ");
-                
-                itemChoice = scanner.nextInt();
-                while (!(chosenStation.getItems().size() >= itemChoice && itemChoice > 0)) {
-                    System.out.println("\nInvalid input. Please enter a number between 1 and " + chosenStation.getItems().size() + ".");
-                    System.out.println("\n---------------------------");
-                    System.out.print("\nSelect an item to log (1-" + chosenStation.getItems().size() + "): ");
-                    itemChoice = scanner.nextInt();
-                }
-                
+                itemChoice = inRangeChecker(scanner, "Select an item to log (1-" + chosenStation.getItems().size() + "): ", 1, chosenStation.getItems().size());
                 chosenItem = chosenStation.getItems().get(itemChoice - 1);
 
                 System.out.println("\n---------------------------");
             } 
             
-            ItemNutrition nutrition = DiningApi.getNutrition(chosenItem.getID());
-            System.out.print("\nHow many servings of " + chosenItem.getName() +
-                                " (" + getLabel(nutrition, "Serving Size") + ")?: ");
+            ItemNutrition nutrition;
+            try {
+                nutrition = DiningApi.getNutrition(chosenItem.getID());
+            } catch (Exception e) {
+                System.out.println("Couldn't retrieve nutrition information. Check your internet connection and try again.");
+                continue;
+            }
             
-            double servings = scanner.nextDouble();
+            double servings = doubleChecker(scanner, "How many servings of " + chosenItem.getName() +
+                                " (" + getLabel(nutrition, "Serving Size") + ")?: ");
 
             calories += getValue(nutrition, "Calories") * servings;
             protein += getValue(nutrition, "Protein") * servings;
@@ -159,7 +140,7 @@ public class Main {
         if (meals != null) {
             for (int i = 0; i < meals.size(); i++) {
 
-                if (meals.get(i).getStatus().equalsIgnoreCase("Open")) {
+                if ("Open".equalsIgnoreCase(meals.get(i).getStatus())) {
                     openMeals.add(meals.get(i));
                 }
             }
@@ -185,6 +166,44 @@ public class Main {
             }
         }
         return "";
+    }
+
+    public static int inRangeChecker(Scanner scanner, String prompt, int min, int max) {
+        while (true) {
+            System.out.print(prompt);
+            if (scanner.hasNextInt()) {
+                int input = scanner.nextInt();
+                if (input >= min && input <= max) {
+                    return input;
+                } else {
+                    System.out.println("\nInvalid input. Please enter a number between " + min + " and " + max + ".");
+                    System.out.println("\n---------------------------");
+                }
+            } else {
+                System.out.println("\nInvalid input. Please enter a number between " + min + " and " + max + ".");
+                System.out.println("\n---------------------------");
+                scanner.next();
+            }
+        }
+    }
+
+    public static double doubleChecker(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            if (scanner.hasNextDouble()) {
+                double input = scanner.nextDouble();
+                if (input > 0) {
+                    return input;
+                } else {
+                    System.out.println("\nInvalid input. Please enter a positive number.");
+                    System.out.println("\n---------------------------");
+                }
+            } else {
+                System.out.println("\nInvalid input. Please enter a positive number.");
+                System.out.println("\n---------------------------");
+                scanner.next();
+            }
+        }
     }
 
 }
